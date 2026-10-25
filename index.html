@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e9eff8">
+<title>NOVA OS</title>
+<style>
+:root {
+  --glass:rgba(255,255,255,.58);
+  --line:rgba(255,255,255,.8);
+  --ink:#202635;
+  --muted:#747e91;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;overflow:hidden;height:100dvh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);user-select:none;
+  -webkit-user-select:none;
+  background:#dbe8f9;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+.desktop{
+  position:relative;height:100%;overflow:hidden;
+  background:
+   radial-gradient(ellipse at 10% 85%,#a7c4f4 0,transparent 42%),
+   radial-gradient(ellipse at 85% 20%,#d6c8fa 0,transparent 40%),
+   radial-gradient(ellipse at 70% 100%,#c3e9f1 0,transparent 48%),
+   linear-gradient(135deg,#f8fbff,#dce8f9 55%,#eeeaff);
+}
+.desktop:before{
+  content:"";position:absolute;width:75vw;height:65vw;
+  max-width:1000px;max-height:700px;left:15%;top:12%;
+  border-radius:50%;transform:rotate(-25deg);
+  background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(140,175,235,.14));
+  filter:blur(45px);pointer-events:none;
+}
+.menu{
+  position:absolute;z-index:100;top:0;left:0;right:0;height:42px;
+  display:flex;align-items:center;gap:18px;padding:0 19px;
+  background:rgba(255,255,255,.42);
+  border-bottom:1px solid rgba(255,255,255,.48);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  font-size:13px;font-weight:500;
+}
+.brand{font-size:20px;font-weight:800;letter-spacing:-1px}
+.menu-right{margin-left:auto;display:flex;gap:13px;align-items:center}
+.menu button,.menu-item{border:0;background:transparent;padding:4px}
+.desktop-icons{
+  position:absolute;top:64px;right:20px;
+  display:grid;gap:20px;width:90px;
+}
+.desk-icon{
+  display:grid;justify-items:center;gap:6px;
+  padding:5px 2px;border-radius:10px;
+  background:transparent;border:1px solid transparent;
+  font-size:12px;text-shadow:0 1px 5px #fff;
+}
+.desk-icon:active,.desk-icon:focus{
+  background:rgba(255,255,255,.35);
+  border-color:rgba(255,255,255,.65);
+}
+.app-icon{font-size:34px;line-height:1.15}
+.welcome{
+  position:absolute;left:8%;top:20%;
+  pointer-events:none;
+}
+.welcome .eyebrow{
+  color:#65738b;letter-spacing:3px;font-size:11px;font-weight:700;
+}
+.welcome h1{
+  font-size:clamp(48px,8vw,90px);letter-spacing:-5px;
+  margin:8px 0;line-height:1.05;font-weight:750;
+  background:linear-gradient(110deg,#263e6b,#7289bb 65%,#a6a3d8);
+  color:transparent;background-clip:text;-webkit-background-clip:text;
+}
+.welcome p{font-size:14px;color:#65738b}
+.dock-wrap{
+  position:absolute;z-index:110;bottom:max(12px,env(safe-area-inset-bottom));
+  left:50%;transform:translateX(-50%);max-width:calc(100% - 16px);
+}
+.dock{
+  display:flex;align-items:end;gap:8px;padding:10px 12px;
+  background:rgba(255,255,255,.49);
+  border:1px solid var(--line);border-radius:23px;
+  box-shadow:0 12px 45px rgba(55,73,113,.17),inset 0 1px 1px #fff;
+  backdrop-filter:blur(35px) saturate(160%);
+  -webkit-backdrop-filter:blur(35px) saturate(160%);
+}
+.dock button{
+  width:49px;height:49px;flex-shrink:0;
+  border:0;background:transparent;border-radius:13px;
+  font-size:32px;display:grid;place-items:center;
+  transition:transform .16s,background .16s;
+}
+.dock button:active{transform:scale(.88)}
+.dock button:hover{background:rgba(255,255,255,.6)}
+.dock .separator{width:1px;height:35px;background:#ffffffb5;margin:0 2px}
+.dock button span{display:block}
+.dock button small{font-size:9px}
+.window{
+  position:absolute;z-index:20;
+  width:min(650px,calc(100vw - 28px));
+  height:min(440px,calc(100dvh - 150px));
+  min-height:210px;left:50%;top:48%;
+  transform:translate(-50%,-50%);
+  background:rgba(250,252,255,.84);
+  border:1px solid rgba(255,255,255,.94);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 24px 80px rgba(45,62,100,.24);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+  display:flex;flex-direction:column;
+  animation:appear .2s ease-out;
+}
+@keyframes appear{
+  from{opacity:0;scale:.97}
+  to{opacity:1;scale:1}
+}
+.window.hidden{display:none}
+.win-head{
+  height:47px;flex-shrink:0;display:flex;align-items:center;
+  padding:0 13px;gap:8px;border-bottom:1px solid #dce3ee;
+  background:rgba(255,255,255,.55);touch-action:pan-y;
+}
+.traffic{display:flex;gap:7px}
+.traffic button{
+  width:12px;height:12px;border-radius:50%;padding:0;border:0;
+}
+.red{background:#ff6058}.yellow{background:#ffbd2e}.green{background:#29c840}
+.win-title{flex:1;text-align:center;font-size:13px;font-weight:650}
+.win-body{padding:22px;overflow:auto;flex:1;user-select:text;-webkit-user-select:text}
+.win-body h2{font-size:25px;letter-spacing:-.8px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:13px}
+.panel{
+  background:#ffffffa6;border:1px solid #ffffff;
+  border-radius:12px;padding:15px;margin-top:14px;
+}
+.action{
+  border:1px solid #d9e0ee;background:#fff;
+  border-radius:9px;padding:9px 13px;margin:4px 4px 4px 0;
+}
+.action:active{background:#e7edfa}
+input,textarea{
+  width:100%;padding:11px;border-radius:9px;
+  border:1px solid #d6deec;background:#ffffffc9;
+  font:inherit;outline:none;user-select:text;
+}
+textarea{resize:vertical;min-height:130px}
+.file-row{
+  padding:12px;border-radius:8px;display:flex;gap:10px;
+  border-bottom:1px solid #e5e9f0;font-size:14px;
+}
+.file-row span:last-child{margin-left:auto;color:#8290a6}
+.store-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.store-card{border:1px solid #e0e6f1;border-radius:12px;padding:13px;background:#fff}
+.terminal{
+  background:#18202d;color:#e3ecff;border-radius:10px;
+  padding:15px;min-height:180px;font:13px/1.8 ui-monospace,monospace;
+  overflow-wrap:anywhere;
+}
+.toast{
+  position:absolute;z-index:200;top:58px;left:50%;
+  transform:translateX(-50%);background:#ffffffd9;
+  border:1px solid white;border-radius:12px;padding:12px 18px;
+  font-size:13px;box-shadow:0 6px 25px #53688b25;
+}
+@media(max-width:600px){
+ .menu{gap:10px;padding:0 12px;font-size:12px}
+ .menu .optional{display:none}
+ .welcome{top:22%;left:7%}
+ .welcome h1{letter-spacing:-3px}
+ .desktop-icons{right:10px;top:62px}
+ .dock{gap:3px;padding:8px 7px;border-radius:19px}
+ .dock button{width:39px;height:43px;font-size:27px}
+ .dock .separator{height:27px}
+ .window{width:calc(100vw - 18px);height:min(440px,calc(100dvh - 130px))}
+ .win-body{padding:15px}
+}
+@media(max-height:440px){
+ .dock-wrap{bottom:4px}
+ .dock{padding:4px 8px}
+ .dock button{height:36px;width:38px;font-size:25px}
+ .welcome{top:17%}
+}
+</style>
+</head>
+<body>
+<div class="desktop" id="desktop">
+  <header class="menu">
+    <button class="brand" onclick="openApp('about')">N</button>
+    <button onclick="openApp('about')"><b>NOVA</b></button>
+    <button class="optional" onclick="openApp('finder')">File</button>
+    <button class="optional" onclick="openApp('settings')">View</button>
+    <button class="optional" onclick="openApp('settings')">Window</button>
+    <div class="menu-right">
+      <span>◉</span><span>⌕</span><span>⌁</span>
+      <span id="clock">00:00</span>
+    </div>
+  </header>
+
+  <div class="welcome">
+    <div class="eyebrow">A NEW DIGITAL SPACE</div>
+    <h1>NOVA.</h1>
+    <p>Your space. Your flow.</p>
+  </div>
+
+  <div class="desktop-icons">
+    <button class="desk-icon" onclick="openApp('finder')">
+      <span class="app-icon">📁</span><span>Files</span>
+    </button>
+    <button class="desk-icon" onclick="openApp('notes')">
+      <span class="app-icon">📝</span><span>Notes</span>
+    </button>
+    <button class="desk-icon" onclick="openApp('store')">
+      <span class="app-icon">🛍️</span><span>App Store</span>
+    </button>
+  </div>
+
+  <div class="dock-wrap">
+    <nav class="dock">
+      <button title="Finder" onclick="openApp('finder')">📁</button>
+      <button title="Browser" onclick="openApp('browser')">🌐</button>
+      <button title="Notes" onclick="openApp('notes')">📝</button>
+      <button title="Calculator" onclick="openApp('calculator')">🧮</button>
+      <button title="Terminal" onclick="openApp('terminal')">⌘</button>
+      <span class="separator"></span>
+      <button title="NOVA Store" onclick="openApp('store')">🛍️</button>
+      <button title="Settings" onclick="openApp('settings')">⚙️</button>
+    </nav>
+  </div>
+  <div id="windows"></div>
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const titles={
+ about:"About NOVA OS",finder:"Finder",browser:"Browser",
+ notes:"Notes",calculator:"Calculator",terminal:"Terminal",
+ store:"NOVA Store",settings:"System Settings"
+};
+let topZ=30,installed=['finder','browser','notes','calculator','terminal','settings'];
+let files=JSON.parse(localStorage.getItem('nova-files')||'null')||
+ [{name:'Welcome.txt',type:'Text document'},{name:'Projects',type:'Folder'},{name:'Ideas.txt',type:'Text document'}];
+
+function saveFiles(){
+ try{localStorage.setItem('nova-files',JSON.stringify(files))}
+ catch(e){notify('Penyimpanan penuh atau tidak tersedia')}
+}
+function notify(message){
+ const el=$('toast');el.textContent=message;el.hidden=false;
+ clearTimeout(notify.timer);notify.timer=setTimeout(()=>el.hidden=true,2200);
+}
+function tick(){
+ $('clock').textContent=new Date().toLocaleTimeString([],{
+ hour:'2-digit',minute:'2-digit'
+ });
+}
+tick();setInterval(tick,15000);
+
+function openApp(id){
+ if(!titles[id])return;
+ let existing=$('win-'+id);
+ if(existing){
+  existing.classList.remove('hidden');
+  existing.style.zIndex=++topZ;
+  return;
+ }
+ const win=document.createElement('section');
+ win.className='window';win.id='win-'+id;
+ win.style.zIndex=++topZ;
+ win.innerHTML=`
+ <div class="win-head">
+  <div class="traffic">
+   <button class="red" aria-label="Close" data-act="close"></button>
+   <button class="yellow" aria-label="Minimize" data-act="min"></button>
+   <button class="green" aria-label="Maximize" data-act="max"></button>
+  </div>
+  <div class="win-title">${titles[id]}</div><span>✧</span>
+ </div>
+ <div class="win-body">${content(id)}</div>`;
+ $('windows').appendChild(win);
+ win.addEventListener('pointerdown',()=>win.style.zIndex=++topZ);
+ win.querySelectorAll('[data-act]').forEach(btn=>btn.addEventListener('click',e=>{
+  e.stopPropagation();
+  const action=btn.dataset.act;
+  if(action==='close')win.remove();
+  if(action==='min')win.classList.add('hidden');
+  if(action==='max'){
+   if(win.dataset.max==='1'){
+    win.style.cssText=`z-index:${++topZ}`;
+    win.dataset.max='0';
+   }else{
+    win.style.left='8px';win.style.top='49px';
+    win.style.transform='none';
+    win.style.width='calc(100% - 16px)';
+    win.style.height='calc(100% - 125px)';
+    win.dataset.max='1';
+   }
+  }
+ }));
+ makeDraggable(win);
+}
+function content(id){
+ if(id==='about')return `<h2>Welcome to NOVA OS</h2>
+ <p class="muted">A web-based desktop experience, built for your iPad.</p>
+ <div class="panel"><b>NOVA OS 1.0 Concept</b><p class="muted">Light Glass Edition · Build 001</p>
+ This is a desktop simulation running inside your browser.</div>`;
+ if(id==='finder')return `<h2>My Files</h2><p class="muted">Local virtual workspace</p>
+ <button class="action" onclick="newFile()">＋ New file</button>
+ <button class="action" onclick="newFolder()">＋ New folder</button>
+ <div id="file-list">${renderFiles()}</div>`;
+ if(id==='notes')return `<h2>Quick Notes</h2><p class="muted">Notes save on this device.</p>
+ <textarea id="note" placeholder="Write something..."></textarea>
+ <button class="action" onclick="saveNote()">Save note</button>
+ <span id="note-status" class="muted"></span>`;
+ if(id==='calculator')return `<h2>Calculator</h2>
+ <input id="calc-display" value="0" readonly style="font-size:28px;text-align:right;margin:12px 0">
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+ ${['7','8','9','÷','4','5','6','×','1','2','3','−','C','0','.','+','='].map(v=>`<button class="action" onclick="calc('${v}')">${v}</button>`).join('')}
+ </div>`;
+ if(id==='terminal')return `<h2>Terminal</h2>
+ <div class="terminal"><div id="term-out">NOVA Terminal [Simulation]<br>Type help to view commands.</div>
+ <input id="term-in" placeholder="nova@ipad:~$" style="margin-top:12px;background:#263143;color:white;border-color:#526078" onkeydown="if(event.key==='Enter')runCommand()"></div>`;
+ if(id==='store')return `<h2>NOVA Store</h2><p class="muted">Discover your workspace apps.</p>
+ <div class="store-grid">${[['weather','🌤️','Weather'],['calendar','📅','Calendar'],['music','🎵','Music'],['photos','🖼️','Gallery']].map(a=>`<div class="store-card"><div style="font-size:30px">${a[1]}</div><b>${a[2]}</b><p class="muted">NOVA mini app</p><button class="action" onclick="installApp('${a[0]}')">${installed.includes(a[0])?'Installed':'Get'}</button></div>`).join('')}</div>
+ <p class="muted">Simulated store. No external apps are downloaded.</p>`;
+ if(id==='settings')return `<h2>System Settings</h2><p class="muted">Personalize NOVA OS.</p>
+ <div class="panel"><b>Appearance</b><p><button class="action" onclick="setTheme('light')">Light Glass</button><button class="action" onclick="setTheme('blue')">Blue Glass</button></p></div>
+ <div class="panel"><b>About this device</b><p class="muted">NOVA OS · Web Desktop · Local demo</p></div>`;
+ if(id==='browser')return `<h2>Browser</h2><p class="muted">Open a website in a separate browser tab.</p>
+ <form onsubmit="openWebsite(event)"><input id="web-url" type="url" placeholder="https://example.com" required>
+ <button class="action" type="submit">Open website ↗</button></form>
+ <p class="muted">For security, websites open in a normal browser tab.</p>`;
+ return `<h2>${titles[id]||id}</h2><p class="muted">NOVA mini app</p><div class="panel">Welcome to ${id}.</div>`;
+}
+function makeDraggable(win){
+ const head=win.querySelector('.win-head');let start=null;
+ head.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button')||win.dataset.max==='1')return;
+  const r=win.getBoundingClientRect();
+  start={x:e.clientX,y:e.clientY,left:r.left,top:r.top};
+  head.setPointerCapture(e.pointerId);
+ });
+ head.addEventListener('pointermove',e=>{
+  if(!start)return;
+  win.style.left=(start.left+e.clientX-start.x)+'px';
+  win.style.top=(start.top+e.clientY-start.y)+'px';
+  win.style.transform='none';
+ });
+ head.addEventListener('pointerup',()=>start=null);
+ head.addEventListener('pointercancel',()=>start=null);
+}
+function renderFiles(){
+ return files.map((f,i)=>`<div class="file-row"><span>${f.type==='Folder'?'📁':'📄'}</span><span>${escapeHTML(f.name)}</span><span><button class="action" onclick="renameFile(${i})">Rename</button><button class="action" onclick="deleteFile(${i})">×</button></span></div>`).join('');
+}
+function escapeHTML(s){
+ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function refreshFiles(){
+ const el=$('file-list');if(el)el.innerHTML=renderFiles();
+}
+function newFile(){
+ const name=prompt('Nama file baru:');if(!name)return;
+ files.push({name,type:'Text document'});saveFiles();refreshFiles();
+}
+function newFolder(){
+ const name=prompt('Nama folder baru:');if(!name)return;
+ files.push({name,type:'Folder'});saveFiles();refreshFiles();
+}
+function renameFile(i){
+ const name=prompt('Nama baru:',files[i].name);if(!name)return;
+ files[i].name=name;saveFiles();refreshFiles();
+}
+function deleteFile(i){
+ if(!confirm('Hapus '+files[i].name+'?'))return;
+ files.splice(i,1);saveFiles();refreshFiles();
+}
+function saveNote(){
+ const value=$('note').value;
+ try{localStorage.setItem('nova-note',value);$('note-status').textContent='Saved ✓'}
+ catch(e){$('note-status').textContent='Save failed'}
+}
+function calc(v){
+ const d=$('calc-display');
+ if(v==='C'){d.value='0';return}
+ if(v==='='){
+  try{
+   if(!/^[\d+\-*/.() ]+$/.test(d.value))throw Error();
+   const result=Function('"use strict";return ('+d.value+')')();
+   d.value=Number.isFinite(result)?String(result):'Error';
+  }catch(e){d.value='Error'}
+  return;
+ }
+ const ops={'÷':'/','×':'*','−':'-'};
+ d.value=d.value==='0'&&/\d/.test(v)?v:d.value+(ops[v]||v);
+}
+function runCommand(){
+ const input=$('term-in'),out=$('term-out'),cmd=input.value.trim();
+ const line=document.createElement('div');
+ line.textContent='nova@ipad:~$ '+cmd;out.appendChild(line);
+ const result=document.createElement('div');
+ if(cmd==='help')result.textContent='help · date · ls · clear · about';
+ else if(cmd==='date')result.textContent=new Date().toString();
+ else if(cmd==='ls')result.textContent=files.map(f=>f.name).join('   ')||'(empty)';
+ else if(cmd==='about')result.textContent='NOVA OS Web Simulation';
+ else if(cmd==='clear'){out.innerHTML='';input.value='';return}
+ else result.textContent='Command not found. Type help.';
+ out.appendChild(result);input.value='';
+}
+function installApp(id){
+ if(!installed.includes(id))installed.push(id);
+ const btn=event.target;btn.textContent='Installed';
+ notify(titles[id]||id+' installed in simulation');
+}
+function setTheme(theme){
+ if(theme==='blue'){
+  $('desktop').style.background='radial-gradient(ellipse at 20% 20%,#d8e7ff,transparent 55%),linear-gradient(135deg,#a9c6ef,#e4e9fa,#c4d5f5)';
+ }else{
+  $('desktop').style.background='';
+ }
+ notify('Appearance updated');
+}
+function openWebsite(e){
+ e.preventDefault();const url=$('web-url').value;
+ if(/^https?:\/\//i.test(url))window.open(url,'_blank','noopener,noreferrer');
+}
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'){
+  const wins=[...document.querySelectorAll('.window')];
+  if(wins.length)wins.sort((a,b)=>(+b.style.zIndex)-(+a.style.zIndex))[0].remove();
+ }
+});
+</script>
+</body>
+</html>
